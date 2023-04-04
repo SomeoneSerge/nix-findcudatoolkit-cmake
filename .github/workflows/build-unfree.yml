@@ -1,0 +1,42 @@
+name: "Build and populate the unfree cache"
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron:  '40 2 * * *'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Install nix
+      uses: cachix/install-nix-action@v20
+      with:
+        extra_nix_config: |
+          experimental-features = nix-command flakes
+          access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+        install_url: https://releases.nixos.org/nix/nix-2.9.1/install
+        nix_path: "nixpkgs=channel:nixpkgs-unstable"
+    - name: Show nixpkgs version
+      run: nix-instantiate --eval -E '(import <nixpkgs> {}).lib.version'
+    - name: Consume read-only cuda-maintainers cachix
+      uses: cachix/cachix-action@v12
+      with:
+        name: cuda-maintainers
+    - name: Consume the read-only free cachix
+      uses: cachix/cachix-action@v12
+      with:
+        name: some-unfree
+    - name: Setup writeable unfree cachix
+      uses: cachix/cachix-action@v12
+      with:
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN_UNFREE }}'
+        name: some-unfree
+    - name: nix-build legacy way
+      run: nix-build -A use-legacy
+    - name: nix-build using CUDAToolkit_ROOT
+      run: nix-build -A use-cudatoolkit-root
