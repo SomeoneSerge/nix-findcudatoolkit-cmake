@@ -19,6 +19,13 @@ stdenv.mkDerivation {
     cuda_cudart
     libcublas # Just to see if we can target_link_libraries
   ];
+
+  preConfigure = ''
+    echo Environment variables begin >&2
+    env >&2
+    echo Environment variables end >&2
+    echo >&2
+  '';
 }
 
 

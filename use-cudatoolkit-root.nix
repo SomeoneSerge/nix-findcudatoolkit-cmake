@@ -26,6 +26,14 @@ stdenv.mkDerivation {
   cmakeFlags = [
     "-DCUDAToolkit_ROOT=${CUDAToolkit_ROOT}"
   ];
+
+  preConfigure = ''
+    echo Environment variables begin >&2
+    env >&2
+    echo Environment variables end >&2
+    echo >&2
+  '';
+
   passthru = { inherit CUDAToolkit_ROOT; };
 }
 
