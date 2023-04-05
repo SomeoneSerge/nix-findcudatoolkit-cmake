@@ -4,9 +4,6 @@ inputs:
   cachix_unfree_token:
     description: "CACHIX_AUTH_TOKEN for some-unfree"
     required: false
-  github_token:
-    description: "GITHUB_TOKEN"
-    required: false
 runs:
   steps:
     - name: Install nix
@@ -14,7 +11,6 @@ runs:
       with:
         extra_nix_config: |
           experimental-features = nix-command flakes
-          access-tokens = github.com=${{ inputs.github_token }}
         install_url: https://releases.nixos.org/nix/nix-2.9.1/install
         nix_path: "nixpkgs=channel:nixpkgs-unstable"
     - name: Show nixpkgs version
