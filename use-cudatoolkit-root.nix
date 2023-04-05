@@ -32,6 +32,8 @@ stdenv.mkDerivation {
     env >&2
     echo Environment variables end >&2
     echo >&2
+
+    export NVCC_APPEND_FLAGS+=" -L${cuda_cudart}/lib -I${cuda_cudart}/include"
   '';
 
   passthru = { inherit CUDAToolkit_ROOT; };
