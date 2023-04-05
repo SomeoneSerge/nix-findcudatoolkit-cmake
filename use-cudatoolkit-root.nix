@@ -9,9 +9,14 @@ let
   cudaPaths = [
     cuda_nvcc
     cuda_cudart
+    cuda_nvtx # It seems that CUDA::cudart won't work without this
     libcublas # Just to see if we can target_link_libraries
   ];
-  CUDAToolkit_ROOT = builtins.concatStringsSep ";" cudaPaths;
+  CUDAToolkit_ROOT = builtins.concatStringsSep ";" (map lib.getDev cudaPaths);
+  CUDAToolkit_INCLUDE_DIR = builtins.concatStringsSep ";" (lib.pipe cudaPaths [
+    (map lib.getDev)
+    (map (x: "${x}/include"))
+  ]);
 in
 stdenv.mkDerivation {
   pname = "demo";
@@ -25,6 +30,7 @@ stdenv.mkDerivation {
   ];
   cmakeFlags = [
     "-DCUDAToolkit_ROOT=${CUDAToolkit_ROOT}"
+    "-DCUDAToolkit_INCLUDE_DIR=${CUDAToolkit_INCLUDE_DIR}"
   ];
 
   preConfigure = ''
