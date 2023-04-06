@@ -34,7 +34,6 @@ stdenv.mkDerivation {
   cmakeFlags = [
     "-DCUDAToolkit_ROOT=${CUDAToolkit_ROOT}"
     "-DCUDAToolkit_INCLUDE_DIR=${CUDAToolkit_INCLUDE_DIR}"
-    "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON"
   ];
 
   preConfigure = ''
