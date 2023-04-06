@@ -34,6 +34,7 @@ stdenv.mkDerivation {
   cmakeFlags = [
     "-DCUDAToolkit_ROOT=${CUDAToolkit_ROOT}"
     "-DCUDAToolkit_INCLUDE_DIR=${CUDAToolkit_INCLUDE_DIR}"
+    "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON"
   ];
 
   preConfigure = ''
@@ -51,11 +52,20 @@ stdenv.mkDerivation {
   ];
 
   doInstallCheck = true;
-  installCheckPhase = ''
-    patchelf --print-rpath $out/bin/demo
-    patchelf --print-needed $out/bin/demo
-    ldd $out/bin/demo
-    # ldd $out/bin/demo | grep -q "not found" && exit 1
+  preInstallCheck = ''
+    if ldd $out/bin/demo | grep -q "not found"
+    then
+      echo Runpath:
+      patchelf --print-rpath $out/bin/demo
+
+      echo DT_NEEDED:
+      patchelf --print-needed $out/bin/demo
+
+      echo ldd:
+      ldd $out/bin/demo
+
+      exit 1
+    fi
   '';
 
   passthru = { inherit CUDAToolkit_ROOT; };
