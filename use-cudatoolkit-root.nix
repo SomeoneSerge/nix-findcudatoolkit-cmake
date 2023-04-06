@@ -1,6 +1,8 @@
-{ stdenv
-, cmake
+{ cmake
 , cudaPackages
+, glibc
+, patchelf
+, stdenv
 }:
 
 with cudaPackages;
@@ -25,6 +27,7 @@ stdenv.mkDerivation {
   src = ./.;
 
   nativeBuildInputs = [
+    autoAddOpenGLRunpathHook
     cmake
     cuda_nvcc
   ];
@@ -40,6 +43,19 @@ stdenv.mkDerivation {
     echo >&2
 
     export NVCC_APPEND_FLAGS+=" -L${cuda_cudart}/lib -I${cuda_cudart}/include"
+  '';
+
+  nativeCheckInputs = map lib.getBin [
+    glibc # ldd
+    patchelf
+  ];
+
+  doInstallCheck = true;
+  installCheckPhase = ''
+    patchelf --print-rpath $out/bin/demo
+    patchelf --print-needed $out/bin/demo
+    ldd $out/bin/demo
+    # ldd $out/bin/demo | grep -q "not found" && exit 1
   '';
 
   passthru = { inherit CUDAToolkit_ROOT; };
