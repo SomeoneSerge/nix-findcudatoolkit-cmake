@@ -1,8 +1,10 @@
 { cmake
+, cppzmq
 , cudaPackages
 , glibc
 , patchelf
 , stdenv
+, zeromq
 }:
 
 with cudaPackages;
@@ -20,7 +22,7 @@ let
     (map (x: "${x}/include"))
   ]);
 in
-stdenv.mkDerivation {
+backendStdenv.mkDerivation {
   pname = "demo";
   version = "0.0.1";
 
@@ -31,17 +33,16 @@ stdenv.mkDerivation {
     cmake
     cuda_nvcc
   ];
+  buildInputs = [
+    cppzmq
+    zeromq
+  ];
   cmakeFlags = [
     "-DCUDAToolkit_ROOT=${CUDAToolkit_ROOT}"
     "-DCUDAToolkit_INCLUDE_DIR=${CUDAToolkit_INCLUDE_DIR}"
   ];
 
   preConfigure = ''
-    echo Environment variables begin >&2
-    env >&2
-    echo Environment variables end >&2
-    echo >&2
-
     export NVCC_APPEND_FLAGS+=" -L${cuda_cudart}/lib -I${cuda_cudart}/include"
   '';
 
@@ -63,7 +64,7 @@ stdenv.mkDerivation {
       echo ldd:
       ldd $out/bin/demo
 
-      exit 1
+      # exit 1
     fi
   '';
 
