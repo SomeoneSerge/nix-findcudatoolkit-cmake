@@ -22,7 +22,7 @@ let
     (map (x: "${x}/include"))
   ]);
 in
-backendStdenv.mkDerivation {
+stdenv.mkDerivation {
   pname = "demo";
   version = "0.0.1";
 

@@ -16,7 +16,8 @@
         inherit (pkgs) callPackage;
       in
       {
-        use-cudatoolkit-root = callPackage ./use-cudatoolkit-root.nix { };
+        use-cudatoolkit-root = callPackage ./use-cudatoolkit-root.nix { stdenv = pkgs.cudaPackages.backendStdenv; };
+        use-cudatoolkit-root-wrong-stdenv = callPackage ./use-cudatoolkit-root.nix { };
         use-legacy = callPackage ./use-legacy.nix { };
       };
   };

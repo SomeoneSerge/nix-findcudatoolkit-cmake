@@ -19,6 +19,17 @@ jobs:
         cachix_unfree_token: ${{ secrets.CACHIX_AUTH_TOKEN_UNFREE }}
     - name: nix build using CUDAToolkit_ROOT
       run: nix build -L .#use-cudatoolkit-root
+  use-cudatoolkit-root-wrong-stdenv:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Setup nix
+      uses: ./.github/actions/setup-nix
+      with:
+        cachix_unfree_token: ${{ secrets.CACHIX_AUTH_TOKEN_UNFREE }}
+    - name: nix build using CUDAToolkit_ROOT
+      run: nix build -L .#use-cudatoolkit-root-wrong-stdenv
   use-legacy:
     runs-on: ubuntu-latest
     steps:
