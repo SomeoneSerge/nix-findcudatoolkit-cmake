@@ -40,6 +40,8 @@ stdenv.mkDerivation {
   cmakeFlags = [
     "-DCUDAToolkit_ROOT=${CUDAToolkit_ROOT}"
     "-DCUDAToolkit_INCLUDE_DIR=${CUDAToolkit_INCLUDE_DIR}"
+    "-DCMAKE_VERBOSE_MAKEFILE=ON"
+    "-DCMAKE_MESSAGE_LOG_LEVEL=TRACE"
   ];
 
   preConfigure = ''
@@ -53,15 +55,20 @@ stdenv.mkDerivation {
 
   doInstallCheck = true;
   preInstallCheck = ''
+    echo ldd $(pwd)/demo
+    ldd $(pwd)/demo
+
     if ldd $out/bin/demo | grep -q "not found"
     then
-      echo Runpath:
+      echo patchelf --print-rpath $out/bin/demo
       patchelf --print-rpath $out/bin/demo
+      echo
 
-      echo DT_NEEDED:
+      echo patchelf --print-needed $out/bin/demo
       patchelf --print-needed $out/bin/demo
+      echo
 
-      echo ldd:
+      echo ldd $out/bin/demo
       ldd $out/bin/demo
 
       # exit 1
