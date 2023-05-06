@@ -5,6 +5,7 @@
 , patchelf
 , stdenv
 , zeromq
+, lddHook
 }:
 
 with cudaPackages;
@@ -32,6 +33,7 @@ stdenv.mkDerivation {
     autoAddOpenGLRunpathHook
     cmake
     cuda_nvcc
+    lddHook
   ];
   buildInputs = [
     cppzmq
@@ -44,35 +46,10 @@ stdenv.mkDerivation {
     "-DCMAKE_MESSAGE_LOG_LEVEL=TRACE"
   ];
 
+  lddFailIfNotFound = false;
+
   preConfigure = ''
     export NVCC_APPEND_FLAGS+=" -L${cuda_cudart}/lib -I${cuda_cudart}/include"
-  '';
-
-  nativeCheckInputs = map lib.getBin [
-    glibc # ldd
-    patchelf
-  ];
-
-  doInstallCheck = true;
-  preInstallCheck = ''
-    echo ldd $(pwd)/demo
-    ldd $(pwd)/demo
-
-    if ldd $out/bin/demo | grep -q "not found"
-    then
-      echo patchelf --print-rpath $out/bin/demo
-      patchelf --print-rpath $out/bin/demo
-      echo
-
-      echo patchelf --print-needed $out/bin/demo
-      patchelf --print-needed $out/bin/demo
-      echo
-
-      echo ldd $out/bin/demo
-      ldd $out/bin/demo
-
-      # exit 1
-    fi
   '';
 
   passthru = { inherit CUDAToolkit_ROOT; };
