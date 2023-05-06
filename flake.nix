@@ -19,6 +19,12 @@
         use-cudatoolkit-root = callPackage ./use-cudatoolkit-root.nix { stdenv = pkgs.cudaPackages.backendStdenv; };
         use-cudatoolkit-root-wrong-stdenv = callPackage ./use-cudatoolkit-root.nix { };
         use-legacy = callPackage ./use-legacy.nix { };
+        some-lib = callPackage ./some-lib { };
+        some-app = callPackage ./some-app {
+          inherit (self.packages.x86_64-linux) some-lib;
+        };
+
+        default = self.packages.x86_64-linux.use-cudatoolkit-root;
       };
   };
 }
