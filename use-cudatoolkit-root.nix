@@ -2,6 +2,7 @@
 , cppzmq
 , cudaPackages
 , glibc
+, libsodium
 , patchelf
 , stdenv
 , zeromq
@@ -36,17 +37,16 @@ stdenv.mkDerivation {
     lddHook
   ];
   buildInputs = [
+    libsodium
     cppzmq
     zeromq
-  ];
+  ] ++ cudaPaths;
   cmakeFlags = [
     "-DCUDAToolkit_ROOT=${CUDAToolkit_ROOT}"
     "-DCUDAToolkit_INCLUDE_DIR=${CUDAToolkit_INCLUDE_DIR}"
     "-DCMAKE_VERBOSE_MAKEFILE=ON"
     "-DCMAKE_MESSAGE_LOG_LEVEL=TRACE"
   ];
-
-  lddFailIfNotFound = false;
 
   preConfigure = ''
     export NVCC_APPEND_FLAGS+=" -L${cuda_cudart}/lib -I${cuda_cudart}/include"
