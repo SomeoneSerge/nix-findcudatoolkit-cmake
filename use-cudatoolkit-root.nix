@@ -2,11 +2,11 @@
 , cppzmq
 , cudaPackages
 , glibc
+, lddHook
 , libsodium
 , patchelf
 , stdenv
 , zeromq
-, lddHook
 }:
 
 with cudaPackages;

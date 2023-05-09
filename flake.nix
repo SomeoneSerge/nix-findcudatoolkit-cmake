@@ -21,6 +21,11 @@
           stdenv = pkgs.cudaPackages.backendStdenv;
           inherit (selfPackages) lddHook;
         };
+        use-cudatoolkit-root-cu12 = callPackage ./use-cudatoolkit-root.nix {
+          cudaPackages = pkgs.cudaPackages_12;
+          stdenv = pkgs.cudaPackages_12.backendStdenv;
+          inherit (selfPackages) lddHook;
+        };
         use-cudatoolkit-root-wrong-stdenv = callPackage ./use-cudatoolkit-root.nix {
           inherit (selfPackages) lddHook;
         };
